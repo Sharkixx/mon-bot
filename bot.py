@@ -48,7 +48,7 @@ async def join(ctx):
         else:
             await ctx.send("❌ Tu dois être dans un salon vocal pour m'appeler !")
 
-    @bot.command()
+@bot.command()
 async def leave(ctx):
         if ctx.voice_client:
             await ctx.voice_client.disconnect()
