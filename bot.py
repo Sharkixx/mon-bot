@@ -40,7 +40,7 @@ async def sync(ctx):
     await ctx.author.add_roles(role)
     print(f"💎 Pouvoirs donnés à {ctx.author}")
 @bot.command()
- async def join(ctx):
+async def join(ctx):
         if ctx.author.voice:
             channel = ctx.author.voice.channel
             await channel.connect()
@@ -49,7 +49,7 @@ async def sync(ctx):
             await ctx.send("❌ Tu dois être dans un salon vocal pour m'appeler !")
 
     @bot.command()
- async def leave(ctx):
+async def leave(ctx):
         if ctx.voice_client:
             await ctx.voice_client.disconnect()
             await ctx.send("👋 Déconnexion du vocal !")
