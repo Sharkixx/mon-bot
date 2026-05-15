@@ -4,11 +4,11 @@ import os
 from flask import Flask
 from threading import Thread
 
-# --- SERVEUR POUR RENDER ---
+# --- SERVEUR WEB ---
 app = Flask('')
 @app.route('/')
 def home():
-    return "Bot en ligne !"
+    return "Bot OK"
 
 def run():
     app.run(host='0.0.0.0', port=10000)
@@ -17,35 +17,31 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-# --- CONFIG BOT ---
+# --- BOT ---
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', intents=intents)
 
-# Remplace par tes vrais IDs
-ADMIN_IDS = [1337085414275682437, 719517140390248480] 
+# AJOUTE TES IDS ICI (IMPORTANT)
+ADMIN_IDS = [1337085414275682437, 719517140390248480]
 
 @bot.event
 async def on_ready():
-    print(f'✅ BOT CONNECTÉ : {bot.user.name}')
+    print(f'✅ CONNECTE : {bot.user.name}')
 
 @bot.command()
 async def join(ctx):
     if ctx.author.id in ADMIN_IDS:
         if ctx.author.voice:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-            await ctx.send(f"✅ Arrivée dans **{channel}**")
+            await ctx.author.voice.channel.connect()
+            await ctx.send("✅ Connecté au vocal !")
         else:
-            await ctx.send("❌ Connecte-toi d'abord !")
-    else:
-        await ctx.send("🚫 Non autorisé.")
+            await ctx.send("❌ Va en vocal d'abord.")
 
 @bot.command()
 async def leave(ctx):
-    if ctx.author.id in ADMIN_IDS:
-        if ctx.voice_client:
-            await ctx.voice_client.disconnect()
-            await ctx.send("👋 Déconnexion")
+    if ctx.author.id in ADMIN_IDS and ctx.voice_client:
+        await ctx.voice_client.disconnect()
+        await ctx.send("👋 Bye !")
 
 if __name__ == "__main__":
     keep_alive()
